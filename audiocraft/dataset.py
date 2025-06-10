@@ -126,3 +126,82 @@ class SoundtrackDataset(Dataset):
         }
         
         return sample
+
+
+    
+class OESCom(Dataset):
+
+    
+    def __init__(
+        self
+    ):
+        self.data = pd.read_csv("./oes-com/meta.csv")
+        
+    def __len__(self) -> int:
+        return len(self.data)
+    
+    def normalize_audio(self, waveform, method='peak', eps=1e-10):
+        
+        waveform = np.array(waveform)
+        
+        if method == 'peak':
+            peak = np.max(np.abs(waveform))
+            return waveform / (peak + eps)
+        
+        elif method == 'rms':
+            rms = np.sqrt(np.mean(waveform**2))
+            return waveform / (rms + eps)
+        
+        elif method == 'minmax':
+            max_val = np.max(waveform)
+            min_val = np.min(waveform)
+            return 2 * (waveform - min_val) / (max_val - min_val + eps) - 1
+        
+        elif method == 'standard':
+            mean = np.mean(waveform)
+            std = np.std(waveform)
+            return (waveform - mean) / (std + eps)
+        
+        else:
+            raise ValueError(f"Unknown normalization method: {method}")
+    def load_audio(self, audio_path: str) -> torch.Tensor:
+        waveform, sample_rate = librosa.load(audio_path, sr=32000)
+        waveform = torch.Tensor(waveform)
+        waveform = waveform.unsqueeze(0)
+        if waveform.shape[0] > 1:
+            waveform = torch.mean(waveform, dim=0, keepdim=True)
+        
+        return self.normalize_audio(waveform)
+
+    
+    def generate_prompt(self, item):
+        caption = item['caption']
+        mood = item['mood']
+        prompt = "a film soundtrack for a " + mood + " scene. " + caption
+
+        return prompt
+
+    def __getitem__(self, idx: int) -> Dict[str, torch.Tensor]:
+        """Get a single sample from the dataset."""
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+            
+        item = self.data.iloc[idx]
+        
+        prompt = self.generate_prompt(item)
+        
+        audio_path = "./oes-com/" + str(idx) + "_music.wav"
+        audio = self.load_audio(audio_path)
+        
+        
+        video_features = torch.load("./oes-com/" + str(idx) + ".pt")
+
+        
+        sample = {
+
+            'prompt': prompt,
+            'audio': audio,
+            'video': video_features
+        }
+        
+        return sample
