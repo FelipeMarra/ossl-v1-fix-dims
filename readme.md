@@ -21,4 +21,4 @@ Our implementation builds heavily on the [official audiocraft repository](https:
 
 ### Open Screen Sound Library Version 1 (OSSL-v1.)
 
-Please see [this webpage](https://havenpersona.github.io/ossl_v1) for downloading the dataset.
+Please see [this webpage](https://havenpersona.github.io/ossl-v1) for downloading the dataset.
