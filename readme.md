@@ -7,11 +7,12 @@ This repository provides the Python implementations of our proposed model archit
 If you find this repository useful for your research, please consider citing our paper.
 
 ```
-@InProceedings{ossl2025,
-  itle={Video-Guided Text-to-Music Generation Using Public Domain Movie Collections},
-  author={Kim, Haven and Novack, Zachary and Xu, Weihan and McAuley, Julian and Dong, Hao-Wen},
-  journal={Proceedings of the 26th International Society for Music Information Retrieval (ISMIR)},
-  year={2025}
+@article{kim2025ossl,
+  title = {Video-Guided Text-to-Music Generation Using Public Domain Movie Collections},
+  author = {Haven Kim and Zachary Novack and Weihan Xu and Julian McAuley and Hao-Wen Dong},
+  journal = {ISMIR 2025},
+  year = {2025},
+  url = {https://arxiv.org/abs/2506.12573}
 }
 ```
 
