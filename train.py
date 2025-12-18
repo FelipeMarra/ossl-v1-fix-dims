@@ -12,6 +12,9 @@ from pathlib import Path
 import torch.nn as nn
 from transformers import get_scheduler
 from tqdm import tqdm
+
+MUSICGEN_MODEL = "facebook/musicgen-medium"
+
 criterion = nn.CrossEntropyLoss()
 grad_acc = 8
 
@@ -76,13 +79,13 @@ class DistributedMusicGenTrainer:
     def train_process(self, rank: int, world_size: int):
         self.setup_process(rank, world_size)
         
-        base_model = MusicGen.get_pretrained('facebook/musicgen-small')
+        base_model = MusicGen.get_pretrained(MUSICGEN_MODEL)
         lm_dict = base_model.lm.state_dict()
 
-        lm = load_lm_model(lm_dict, "facebook/musicgen-small", device="cuda")
-        
-        compression_model = load_compression_model("facebook/musicgen-small", device="cuda")
-        model = VideoMusicGen('small',
+        lm = load_lm_model(lm_dict, MUSICGEN_MODEL, device="cuda")
+
+        compression_model = load_compression_model(MUSICGEN_MODEL, device="cuda")
+        model = VideoMusicGen(MUSICGEN_MODEL.strip('-')[-1],
                            compression_model=compression_model,
                            lm=lm,
                            max_duration=30)
